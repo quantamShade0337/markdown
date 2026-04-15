@@ -214,12 +214,12 @@ export default function Home() {
   const previewContent = useMemo(() => normalizeCheckboxMarkdown(content), [content]);
 
   const themeClasses = {
-    bg: "bg-[#050505]",
+    bg: "bg-[#18181b]",
     text: "text-white",
     secondaryText: "text-[#888888]",
     border: "border-[#1A1A1A]",
     hover: "hover:bg-[#0D0D0D]",
-    input: "bg-[#050505] text-white",
+    input: "bg-[#18181b] text-white",
     divider: "bg-[#1A1A1A]",
   };
 
@@ -337,7 +337,7 @@ export default function Home() {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${safeTitle}</title>
   <style>
-    body { background: #000000; color: #FFFFFF; font-family: ui-sans-serif, system-ui, sans-serif; max-width: 860px; margin: 0 auto; padding: 32px; line-height: 1.7; }
+    body { background: #18181b; color: #FFFFFF; font-family: ui-sans-serif, system-ui, sans-serif; max-width: 860px; margin: 0 auto; padding: 32px; line-height: 1.7; }
     pre, code { background: #0A0A0A; border: 1px solid #1A1A1A; }
     pre { padding: 12px; overflow-x: auto; }
     table { border-collapse: collapse; width: 100%; }
@@ -517,7 +517,7 @@ ${html}
       </header>
 
       <main className="grid min-h-0 flex-1 overflow-hidden grid-cols-1 md:grid-cols-[1fr_1px_1fr]">
-        <section className="min-h-0 overflow-hidden">
+        <section className="min-h-0 h-full overflow-hidden">
           <textarea
             ref={textareaRef}
             value={content}
@@ -531,10 +531,10 @@ ${html}
 
         <div className={`hidden md:block ${themeClasses.divider}`} />
 
-        <section className="min-h-0 overflow-y-auto p-6">
+        <section className="min-h-0 h-full overflow-y-auto p-6">
           <div
             ref={previewRef}
-            className={`markdown-preview max-w-none text-base leading-7 ${themeClasses.text}`}
+            className={`markdown-preview min-h-full max-w-none text-base leading-7 ${themeClasses.text}`}
           >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
