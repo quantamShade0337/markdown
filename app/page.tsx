@@ -534,7 +534,7 @@ ${html}
         <section className="min-h-0 h-full overflow-y-auto p-6">
           <div
             ref={previewRef}
-            className={`markdown-preview min-h-full max-w-none text-base leading-7 ${themeClasses.text}`}
+            className={`markdown-preview max-w-none text-base leading-7 ${themeClasses.text}`}
           >
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
