@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useMemo, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
@@ -138,6 +138,14 @@ const estimateReadingMinutes = (wordCount: number): number => {
   return Math.max(1, Math.ceil(wordCount / wordsPerMinute));
 };
 
+const normalizeCheckboxMarkdown = (markdown: string): string =>
+  markdown.replace(/^([ \t]*)\[(x|X| )\](?:[ \t]+(.*)|$)/gm, (_, indent: string, state: string, text: string) => {
+    const checkboxState = state.toLowerCase() === "x" ? "x" : " ";
+    const content = text ? ` ${text}` : "";
+
+    return `${indent}- [${checkboxState}]${content}`;
+  });
+
 const getInitialContent = (): string => {
   if (typeof window === "undefined") {
     return STARTER_MD;
@@ -183,10 +191,13 @@ export default function Home() {
   const [content, setContent] = useState(getInitialContent);
   const [lastSaved, setLastSaved] = useState<Date | null>(getInitialSaveTime);
   const [isInsertOpen, setIsInsertOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [theme, setTheme] = useState<ThemeMode>(getInitialTheme);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const previewRef = useRef<HTMLDivElement>(null);
+  const insertMenuRef = useRef<HTMLDivElement>(null);
+  const settingsMenuRef = useRef<HTMLDivElement>(null);
 
   const stats = useMemo(() => {
     const trimmed = content.trim();
@@ -200,13 +211,15 @@ export default function Home() {
     };
   }, [content]);
 
+  const previewContent = useMemo(() => normalizeCheckboxMarkdown(content), [content]);
+
   const themeClasses = {
-    bg: "bg-black",
+    bg: "bg-[#050505]",
     text: "text-white",
     secondaryText: "text-[#888888]",
     border: "border-[#1A1A1A]",
     hover: "hover:bg-[#0D0D0D]",
-    input: "bg-black text-white",
+    input: "bg-[#050505] text-white",
     divider: "bg-[#1A1A1A]",
   };
 
@@ -288,6 +301,24 @@ export default function Home() {
     window.localStorage.setItem(STORAGE_THEME_KEY, nextTheme);
   };
 
+  const handleResetTemplate = () => {
+    setTitle("Untitled");
+    setContent(STARTER_MD);
+    setLastSaved(new Date());
+    window.localStorage.setItem(STORAGE_TITLE_KEY, "Untitled");
+    window.localStorage.setItem(STORAGE_KEY, STARTER_MD);
+    setIsSettingsOpen(false);
+  };
+
+  const handleClearSavedData = () => {
+    setTitle("Untitled");
+    setContent(STARTER_MD);
+    setLastSaved(null);
+    window.localStorage.removeItem(STORAGE_TITLE_KEY);
+    window.localStorage.removeItem(STORAGE_KEY);
+    setIsSettingsOpen(false);
+  };
+
   const handleExportHtml = async () => {
     const html = String(
       await unified()
@@ -295,7 +326,7 @@ export default function Home() {
         .use(remarkGfm)
         .use(remarkRehype)
         .use(rehypeStringify)
-        .process(content)
+        .process(previewContent)
     );
 
     const safeTitle = title.trim() || "untitled";
@@ -323,9 +354,46 @@ ${html}
     downloadFile(`${safeTitle}.html`, wrapped, "text/html;charset=utf-8");
   };
 
+  const handleSettingsToggle = () => {
+    setIsSettingsOpen((open) => !open);
+    setIsInsertOpen(false);
+  };
+
+  useEffect(() => {
+    const handlePointerDown = (event: MouseEvent) => {
+      const target = event.target;
+
+      if (!(target instanceof Node)) {
+        return;
+      }
+
+      if (
+        isInsertOpen &&
+        insertMenuRef.current &&
+        !insertMenuRef.current.contains(target)
+      ) {
+        setIsInsertOpen(false);
+      }
+
+      if (
+        isSettingsOpen &&
+        settingsMenuRef.current &&
+        !settingsMenuRef.current.contains(target)
+      ) {
+        setIsSettingsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [isInsertOpen, isSettingsOpen]);
+
   return (
     <div
-      className={`flex min-h-screen flex-col ${themeClasses.bg} ${themeClasses.text} ${textStyle}`}
+      className={`flex min-h-screen flex-col overflow-hidden ${themeClasses.bg} ${themeClasses.text} ${textStyle}`}
     >
       <header
         className={`relative grid h-14 grid-cols-3 items-center border-b px-4 ${themeClasses.border}`}
@@ -341,7 +409,7 @@ ${html}
         </div>
 
         <div className="flex items-center justify-center gap-2 text-sm">
-          <div className="relative">
+          <div ref={insertMenuRef} className="relative">
             <button
               type="button"
               onClick={() => setIsInsertOpen((open) => !open)}
@@ -399,13 +467,45 @@ ${html}
         </div>
 
         <div className="flex items-center justify-end gap-2">
-          <button
-            type="button"
-            aria-label="Settings"
-            className={`rounded border p-2 transition ${themeClasses.border} ${themeClasses.hover}`}
-          >
-            ⚙
-          </button>
+          <div ref={settingsMenuRef} className="relative">
+            <button
+              type="button"
+              aria-label="Settings"
+              aria-expanded={isSettingsOpen}
+              onClick={handleSettingsToggle}
+              className={`rounded border p-2 transition ${themeClasses.border} ${themeClasses.hover}`}
+            >
+              ⚙
+            </button>
+
+            {isSettingsOpen ? (
+              <div
+                className={`absolute right-0 top-10 z-20 min-w-52 border ${themeClasses.border} ${themeClasses.bg}`}
+              >
+                <button
+                  type="button"
+                  onClick={handleThemeToggle}
+                  className={`block w-full px-3 py-2 text-left text-sm transition ${themeClasses.hover}`}
+                >
+                  Toggle theme
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResetTemplate}
+                  className={`block w-full px-3 py-2 text-left text-sm transition ${themeClasses.hover}`}
+                >
+                  Reset template
+                </button>
+                <button
+                  type="button"
+                  onClick={handleClearSavedData}
+                  className={`block w-full px-3 py-2 text-left text-sm transition ${themeClasses.hover}`}
+                >
+                  Clear saved draft
+                </button>
+              </div>
+            ) : null}
+          </div>
           <button
             type="button"
             onClick={handleThemeToggle}
@@ -416,14 +516,14 @@ ${html}
         </div>
       </header>
 
-      <main className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[1fr_1px_1fr]">
-        <section className="min-h-0">
+      <main className="grid min-h-0 flex-1 overflow-hidden grid-cols-1 md:grid-cols-[1fr_1px_1fr]">
+        <section className="min-h-0 overflow-hidden">
           <textarea
             ref={textareaRef}
             value={content}
             onChange={(event) => handleContentChange(event.target.value)}
             spellCheck={false}
-            className={`h-full min-h-[280px] w-full resize-none border-none p-6 text-base leading-7 outline-none ${themeClasses.input}`}
+            className={`h-full min-h-[280px] w-full resize-none overflow-y-auto border-none p-6 text-base leading-7 outline-none ${themeClasses.input}`}
             aria-label="Markdown editor"
             placeholder="Start writing..."
           />
@@ -440,7 +540,7 @@ ${html}
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw, rehypeSanitize]}
             >
-              {content}
+              {previewContent}
             </ReactMarkdown>
           </div>
         </section>
