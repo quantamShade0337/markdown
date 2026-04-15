@@ -66,7 +66,7 @@ console.log(message);
 
 ## 3) Open a File (\`Open\`)
 
-Click **Open** and load any `.md` file from your computer.
+Click **Open** and load any \`.md\` file from your computer.
 
 ---
 
