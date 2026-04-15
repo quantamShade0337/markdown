@@ -14,13 +14,99 @@ const STORAGE_KEY = "minimal-md-editor-content";
 const STORAGE_TITLE_KEY = "minimal-md-editor-title";
 const STORAGE_THEME_KEY = "minimal-md-editor-theme";
 
-const STARTER_MD = `# Untitled
+const STARTER_MD = `# Minimal Markdown Editor Walkthrough
 
-Start writing.
+Use this template to try every feature, one by one.
 
-- Local-first
-- Live preview
-- Export to .md or .html
+---
+
+## 1) Title + Local Save
+
+Rename the title in the top-left (try: **My First Draft**).
+Type a sentence here, refresh the page, and confirm your content is still here.
+
+> Auto-save is local-first and stored in your browser.
+
+---
+
+## 2) Insert Menu (Center: Insert)
+
+Try each insert option and see live preview instantly:
+
+### Heading
+This section is a heading example.
+
+### Bold + Italic
+Make text **bold** and *italic*.
+
+### Quote
+> "Write as clearly as possible."
+
+### Code Block
+\`\`\`ts
+const message = "Instant preview with no lag";
+console.log(message);
+\`\`\`
+
+### Checklist
+- [ ] Open the Insert menu
+- [ ] Add a heading
+- [ ] Add a code block
+- [ ] Add a table
+
+### Table
+| Feature | Where | Status |
+| --- | --- | --- |
+| Insert | Top center | ✅ |
+| Open \`.md\` | Top center | ✅ |
+| Export \`.md\` | Top center | ✅ |
+| Export \`.html\` | Top center | ✅ |
+
+---
+
+## 3) Open a File (\`Open\`)
+
+Click **Open** and load any `.md` file from your computer.
+
+---
+
+## 4) Export (\`.md\` and \`.html\`)
+
+When ready, click:
+- \`.md\` to download raw markdown
+- \`.html\` to download rendered HTML document
+
+---
+
+## 5) Preview + Split Layout
+
+Left side: editor.
+Right side: live preview.
+Keep typing here to see instant updates.
+
+---
+
+## 6) Footer Stats
+
+Watch the footer update in real time:
+- Word count
+- Character count
+- Reading time
+- Last saved time
+
+---
+
+## 7) Theme Toggle + Settings Icon
+
+Use the top-right theme toggle to switch between sans and mono text.
+Settings icon is present for future options.
+
+---
+
+Done. You just tested the full app. Start your real draft below:
+
+## New Draft
+
 `;
 
 const INSERT_OPTIONS = [
