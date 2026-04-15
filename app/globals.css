@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+.markdown-preview h1,
+.markdown-preview h2,
+.markdown-preview h3,
+.markdown-preview h4,
+.markdown-preview h5,
+.markdown-preview h6 {
+  margin-top: 1.2rem;
+  margin-bottom: 0.65rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.markdown-preview h1 {
+  font-size: 1.65rem;
+}
+
+.markdown-preview h2 {
+  font-size: 1.35rem;
+}
+
+.markdown-preview h3 {
+  font-size: 1.2rem;
+}
+
+.markdown-preview p,
+.markdown-preview ul,
+.markdown-preview ol,
+.markdown-preview blockquote,
+.markdown-preview pre,
+.markdown-preview table {
+  margin: 0.75rem 0;
+}
+
+.markdown-preview ul,
+.markdown-preview ol {
+  padding-left: 1.25rem;
+}
+
+.markdown-preview li {
+  margin: 0.25rem 0;
+}
+
+.markdown-preview blockquote {
+  border-left: 2px solid #1a1a1a;
+  padding-left: 0.75rem;
+  color: #888888;
+}
+
+.markdown-preview pre {
+  border: 1px solid #1a1a1a;
+  background: #0a0a0a;
+  overflow-x: auto;
+  padding: 0.75rem;
+}
+
+.markdown-preview code {
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.markdown-preview :not(pre) > code {
+  border: 1px solid #1a1a1a;
+  background: #0a0a0a;
+  padding: 0.1rem 0.35rem;
+}
+
+.markdown-preview table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.markdown-preview th,
+.markdown-preview td {
+  border: 1px solid #1a1a1a;
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+}
